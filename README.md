@@ -54,5 +54,21 @@ We benchmarked these algorithms shuffling 500,000 items (average of 5 runs). We 
 
 *When compiled with `ccc`, `tectonic` remains competitive (ranked 3rd) but loses some of the aggressive inlining/vectorization benefits it sees with `gcc` for the reverse operations. `pendulum` suffers a slight penalty compared to other shuffles possibly due to the branching inside the main while-loop.*
 
+### 3. Python Implementation (CPython)
+| Algorithm            | Mean (ms)    | StdDev (ms)  | Runs |
+|----------------------|-------------:|-------------:|-----:|
+| **tectonic**         |     **55.6** |          8.2 |    5 |
+| hindu                |       88.6   |          5.6 |    5 |
+| riffle               |       90.3   |          6.9 |    5 |
+| rc4                  |      187.8   |         10.7 |    5 |
+| fisher_yates         |      262.8   |          5.9 |    5 |
+| batey                |      276.6   |          6.6 |    5 |
+| sattolo              |      288.9   |          5.8 |    5 |
+| knuth                |      293.3   |          7.9 |    5 |
+| **pendulum**         |    **313.3** |         10.5 |    5 |
+| melissa              |     1172.7   |         22.8 |    5 |
+
+*In native Python, Tectonic overwhelmingly outperforms standard single-element swaps because its slice reversions offload the operations into fast low-level C-bindings. Standard algorithms like Fisher-Yates force an expensive Python interpreter loop for each random integer generation and list swap over 500k iterations.*
+
 ## Summary
 The **Tectonic** algorithm proves to be an exceedingly fast permutation generator, especially with traditional vectorizing compilers like GCC. **Pendulum** introduces an interesting alternating boundary approach, providing Fisher-Yates level timings under typical compilation environments.
